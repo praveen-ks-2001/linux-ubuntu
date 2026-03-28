@@ -40,6 +40,24 @@ ENTRYPOINT ["/usr/bin/tini", "--"]
 # -i 0.0.0.0 = bind to all interfaces so Railway can route traffic in
 # -c = basic auth using USERNAME and PASSWORD env variables
 # PS1 sets a red+yellow colored terminal prompt: username@host:path$
+#
+# Safari on iPad specific options (passed via -t to the xterm.js frontend):
+#   disableLeaveAlert=true — suppresses Safari's "Leave site?" dialog that fires
+#     on keyboard shortcuts (e.g. Ctrl+W), which would otherwise close the tab
+#   fontSize=16 — larger than the default (13px) so text is readable without
+#     pinching/zooming on an iPad screen
+#   cursorBlink=true — gives visual feedback that the terminal has focus and is
+#     ready for input, helpful when the on-screen keyboard is raised
+#
+# /bin/bash -l — login flag ensures .bashrc/.profile are sourced in each session
 CMD ["/bin/bash", "-lc", "\
     echo \"export PS1='\\[\\033[01;31m\\]$USERNAME@\\h\\[\\033[00m\\]:\\[\\033[01;33m\\]\\w\\[\\033[00m\\]\\$ '\" >> /root/.bashrc && \
-    /usr/local/bin/ttyd --writable -i 0.0.0.0 -p ${PORT} -c ${USERNAME}:${PASSWORD} /bin/bash"]
+    /usr/local/bin/ttyd \
+      --writable \
+      -i 0.0.0.0 \
+      -p ${PORT} \
+      -c ${USERNAME}:${PASSWORD} \
+      -t disableLeaveAlert=true \
+      -t fontSize=16 \
+      -t cursorBlink=true \
+      /bin/bash -l"]
